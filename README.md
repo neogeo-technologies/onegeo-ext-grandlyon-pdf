@@ -29,6 +29,10 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 | text         | string  | Texte à rechercher dans le document                 |
 | title        | string  | Texte à rechercher dans le titre                    |
 
+#### Migration depuis l'ancien service de recherche PDF du GrandLyon
+
+Voir le [tableau de migration](/docs/migration.md) pour plus d'information.
+
 ### Format des résultats
 
 Le service retourne les résultats dans un document JSON.

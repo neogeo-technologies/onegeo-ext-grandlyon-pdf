@@ -60,7 +60,7 @@ Et chaque résultat est structuré de la manière ci-dessous :
 ```
 
 Les propriétés (__properties__) correspondent aux attributs de métadonnées des
-fichier PDF définis dans les profils d'indexation de Onegeo pour chacune des
+fichiers PDF définis dans les profils d'indexation de Onegeo pour chacune des
 ressources configurées.
 
 ## Usages

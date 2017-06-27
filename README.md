@@ -59,12 +59,17 @@ Et chaque résultat est structuré de la manière ci-dessous :
 }
 ```
 
+Les propriétés (__properties__) correspondent aux attributs de métadonnées des
+fichier PDF définis dans les profils d'indexation de Onegeo pour chacune des
+ressources configurées.
+
 ## Usages
 
 ### Paginer les résultats d'une requête
 
 Par défaut, le service retourne les 10 premiers résultats.
-Les paramètres __from__ et __size__ permettent de paginer les résultats de la manière suivante :
+Les paramètres __from__ et __size__ permettent de paginer les résultats
+de la manière suivante :
 
 * [http://localhost/onegeo/api/profiles/__{pdf}__/search?__from__=__0__&__size__=__10__&..](
     http://localhost/onegeo/api/profiles/pdf/search?from=0&size=10) (valeurs par défaut)
@@ -88,20 +93,66 @@ Les paramètres __from__ et __size__ permettent de paginer les résultats de la 
 
 #### Par la date de publication des documents
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506](
+Quelques exemples :
+
+* Retourner tous les documents postérieur à juin 2015 :
+
+  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506](
     http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506)
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506&__date_lte__=201606](
+* Retourner tous les documents antérieure à juin 2016 :
+
+  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506&__date_lte__=201606](
+    http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506&date_lte=201606)
+
+* Retourner tous les documents entre juin 2015 et juin 2016 :
+
+  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506&__date_lte__=201606](
     http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506&date_lte=201606)
 
 #### Par la source
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__source__=nom_de_la_source](
+La paramètre __source__ permet de filtrer les résultats par le nom de la source
+des documents, c'est à dire le premier niveau d'arborescence dans le répertoire
+de stockage PDF synchronisé avec la plateforme Onegeo.
+
+Attention, ce paramètre est sensible à la casse.
+
+```
+./
+|
++-- source_0/
++-- source_1/
+```
+
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__source__=source_0](
     http://localhost/onegeo/api/profiles/pdf/search?source=nom_de_la_source)
 
 #### Par la ressource
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__resource__=nom_de_la_ressource](
+La paramètre __resource__ permet de filtrer les résultats par le nom de la
+ressource, soit le deuxième niveau d'arborescence dans le répertoire de
+stockage PDF synchronisé avec la plateforme Onegeo (le premier niveau étant
+la __source__).
+
+Attention, ce paramètre est sensible à la casse.
+
+```
+./
+|
++-- source_0/
+|   |
+|   +-- resource_0/
+|   +-- resource_1/
+|   +-- resource_2/
+|
++-- source_1/
+    |
+    +-- resource_3/
+    +-- resource_4/
+```
+
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__resource__=resource_3](
     http://localhost/onegeo/api/profiles/pdf/search?resource=nom_de_la_ressource)
 
 #### Par la commune

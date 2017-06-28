@@ -42,8 +42,16 @@ Celui-ci est structuré de la façon suivante :
 {
     "total": 123,
     "results": [
-        { ... }, { ... }, { ... }, { ... }, { ... },
-        { ... }, { ... }, { ... }, { ... }, { ... }
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... },
+        { ... }
     ]
 }
 ```
@@ -63,11 +71,24 @@ Les propriétés (__properties__) correspondent aux attributs de métadonnées d
 fichiers PDF définis dans les profils d'indexation de Onegeo pour chacune des
 ressources configurées.
 
+``` JSON
+{
+    "file": ...,
+    "resource": ...,
+    "source": ...,
+    "properties": {
+        "date_seance": ...,
+        "communes": ...,
+        "titre": ...
+    }
+}
+```
+
 ## Usages
 
 ### Paginer les résultats d'une requête
 
-Par défaut, le service retourne les 10 premiers résultats.
+Par défaut, le service retourne les dix premiers résultats.
 Les paramètres __from__ et __size__ permettent de paginer les résultats
 de la manière suivante :
 
@@ -81,10 +102,17 @@ de la manière suivante :
 
 ### Rechercher dans les contenus textuels des documents
 
+Le paramètre __text__ permet d'effectuer une recherche textuelle dans le
+contenu des documents PDF.
+
 [http://localhost/onegeo/api/profiles/__{pdf}__/search?__text__=__Texte à rechercher__](
     http://localhost/onegeo/api/profiles/pdf/search?text=Texte%20à%20rechercher)
 
 ### Rechercher dans les titres des documents
+
+Le paramètre __title__ permet d'effectuer une recherche textuelle dans le
+titre des documents PDF. Cette recherche s'applique sur les PDF pour lesquels
+la propriété `titre` est définie.
 
 [http://localhost/onegeo/api/profiles/__{pdf}__/search?__title__=__Texte à rechercher__](
     http://localhost/onegeo/api/profiles/pdf/search?title=Texte%20à%20rechercher)
@@ -93,21 +121,25 @@ de la manière suivante :
 
 #### Par la date de publication des documents
 
+Les paramètres __date_gte__ et __date_lte__ permettent de filtrer les résultats
+d'une requête par la date de publication des documents. Les filtres s'applique
+sur les PDF pour lesquels la propriété `date_seance` est définie.
+
 Quelques exemples :
 
-* Retourner tous les documents postérieur à juin 2015 :
+* Retourner tous les documents postérieurs à juin 2015 :
 
-  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506](
+  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=__201506__](
     http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506)
 
-* Retourner tous les documents antérieure à juin 2016 :
+* Retourner tous les documents antérieurs à juin 2016 :
 
-  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506&__date_lte__=201606](
+  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=__201506__&__date_lte__=__201606__](
     http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506&date_lte=201606)
 
 * Retourner tous les documents entre juin 2015 et juin 2016 :
 
-  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=201506&__date_lte__=201606](
+  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=__201506__&__date_lte__=__201606__](
     http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506&date_lte=201606)
 
 #### Par la source
@@ -119,13 +151,12 @@ de stockage PDF synchronisé avec la plateforme Onegeo.
 Attention, ce paramètre est sensible à la casse.
 
 ```
-./
-|
-+-- source_0/
-+-- source_1/
+.
+├── source_0/
+└── source_1/
 ```
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__source__=source_0](
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__source__=__source_0__](
     http://localhost/onegeo/api/profiles/pdf/search?source=nom_de_la_source)
 
 #### Par la ressource
@@ -138,34 +169,36 @@ la __source__).
 Attention, ce paramètre est sensible à la casse.
 
 ```
-./
-|
-+-- source_0/
-|   |
-|   +-- resource_0/
-|   +-- resource_1/
-|   +-- resource_2/
-|
-+-- source_1/
-    |
-    +-- resource_3/
-    +-- resource_4/
+.
+├── source_0/
+|   ├── resource_0/
+|   ├── resource_1/
+|   └── resource_2/
+└── source_1/
+    ├── resource_3/
+    └── resource_4/
 ```
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__resource__=resource_3](
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__resource__=__resource_3__](
     http://localhost/onegeo/api/profiles/pdf/search?resource=nom_de_la_ressource)
 
 #### Par la commune
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__commune__=Nom de la commune](
+Le paramètre __city__ permet de filtrer les résultats d'une requête par
+la commune. Le filtre s'applique sur les PDF pour lesquels la propriété
+`communes` est définie.
+
+Attention, ce paramètre est sensible à la casse.
+
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__city__=__Nom de la commune__](
     http://localhost/onegeo/api/profiles/pdf/search?commune=Nom%20de%20la%20commune)
 
 #### Trier les résultats
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__sort_by__=date_seance](
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__sort_by__=__date_seance__](
     http://localhost/onegeo/api/profiles/pdf/search?sort_by=date_seance)
 
 Pour obtenir l'ordre décroissant, préfixez la valeur de champ par le signe _[_ __-__ _]_.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__sort_by__=-date_seance](
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__sort_by__=__-date_seance__](
     http://localhost/onegeo/api/profiles/pdf/search?sort_by=-date_seance)

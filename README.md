@@ -31,7 +31,12 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 
 #### Migration depuis l'ancien service de recherche PDF du GrandLyon
 
-Voir le [tableau de migration](/docs/migration.md) pour plus d'information.
+Cf. le [tableau de migration](/docs/migration.md) pour plus d'information.
+
+#### Configuration dans l'interface d'administration de Onegeo
+
+Cf. la [documentation d'administration des profils d'indexation et de
+recherche](/docs/admin.md).
 
 ### Format des résultats
 

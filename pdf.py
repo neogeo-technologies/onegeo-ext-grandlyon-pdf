@@ -24,8 +24,8 @@ def concatenator(offset, m):
 
 class Plugin(AbstractPlugin):
 
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, *args):
+        super().__init__(*args)
 
         self.qs = [
             ('city', 'Nom de la commune', 'string'),
@@ -61,36 +61,36 @@ class Plugin(AbstractPlugin):
 
         if opts['text']:
             data['query']['bool'] = {
-                                'must': {
-                                    'match': {
-                                        'attachment.content': {
-                                            'fuzziness': 'auto',
-                                            'minimum_should_match': '75%',
-                                            'query': opts['text']}}},
-                                'should': {
-                                    'match_phrase': {
-                                        'attachment.content': {
-                                            'query': opts['text'],
-                                            'slop': 6}}}}
+                'must': {
+                    'match': {
+                        'attachment.content': {
+                            'fuzziness': 'auto',
+                            'minimum_should_match': '75%',
+                            'query': opts['text']}}},
+                'should': {
+                    'match_phrase': {
+                        'attachment.content': {
+                            'query': opts['text'],
+                            'slop': 6}}}}
 
             data['highlight']['fields']['attachment.content'] = {
-                                                    'post_tags': ['</strong>'],
-                                                    'pre_tags': ['<strong>'],
-                                                    'type': 'plain'}
+                'post_tags': ['</strong>'],
+                'pre_tags': ['<strong>'],
+                'type': 'plain'}
 
         if opts['title']:
             data['query']['bool'].update({
-                                'should': {
-                                    'match': {
-                                        'properties.titre': {
-                                            'fuzziness': 'auto',
-                                            'minimum_should_match': '75%',
-                                            'query': opts['title']}}}})
+                'should': {
+                    'match': {
+                        'properties.titre': {
+                            'fuzziness': 'auto',
+                            'minimum_should_match': '75%',
+                            'query': opts['title']}}}})
 
             data['highlight']['fields']['properties.titre'] = {
-                                                    'post_tags': ['</strong>'],
-                                                    'pre_tags': ['<strong>'],
-                                                    'type': 'plain'}
+                'post_tags': ['</strong>'],
+                'pre_tags': ['<strong>'],
+                'type': 'plain'}
 
         filter = []
         if opts['source']:
@@ -105,10 +105,14 @@ class Plugin(AbstractPlugin):
         filter_range = {}
         if opts['date_gte']:
             filter_range.update({
-                'range': {'properties.date_seance': {'gte': opts['date_gte']}}})
+                'range': {
+                    'properties.date_seance': {
+                        'gte': opts['date_gte']}}})
         if opts['date_lte']:
             filter_range.update({
-                'range': {'properties.date_seance': {'lte': opts['date_lte']}}})
+                'range': {
+                    'properties.date_seance': {
+                        'lte': opts['date_lte']}}})
         if filter_range:
             filter.append(filter_range)
 
@@ -126,21 +130,22 @@ class Plugin(AbstractPlugin):
         if opts['group_by']:
             data['aggregations'] = {}
             data['aggregations'][opts['group_by']] = {
-                                'terms': {
-                                    'field': opts['group_by']}}
+                'terms': {
+                    'field': opts['group_by']}}
 
         # term suggester
         if opts['suggest'] and str(opts['suggest']).lower() in ('true', 't'):
-            k_prop = {'text': 'attachment.content', 'title': 'properties.titre'}
+            k_prop = {'text': 'attachment.content',
+                      'title': 'properties.titre'}
             for k, prop in k_prop.items():
                 if opts[k]:
                     if opts['suggest_mode'] == 'term':
                         data['suggest'].update({
-                                    k: {'term': {'field': prop,
-                                                 'size': 5,
-                                                 'sort': 'frequency',
-                                                 'suggest_mode': 'always'},
-                                        'text': opts[k]}})
+                            k: {'term': {'field': prop,
+                                         'size': 5,
+                                         'sort': 'frequency',
+                                         'suggest_mode': 'always'},
+                                'text': opts[k]}})
         return data
 
     def input(self, **params):
@@ -162,12 +167,12 @@ class Plugin(AbstractPlugin):
 
             if 'highlight' in hit:
                 k_prop = {'text': 'attachment.content',
-                          'title':'properties.titre'}
+                          'title': 'properties.titre'}
                 for k, prop in k_prop.items():
                     if prop in hit['highlight']:
                         v = hit['highlight'][prop]
                         entry.update({
-                                'highlight': {k: (len(v) > 1) and v or v[0]}})
+                            'highlight': {k: (len(v) > 1) and v or v[0]}})
 
             results.append(entry)
 
@@ -190,7 +195,7 @@ class Plugin(AbstractPlugin):
                         offset[e['offset']].append(opt['text'])
 
                 lst = concatenator(
-                        sorted(offset.items(), key=operator.itemgetter(0)), [])
+                    sorted(offset.items(), key=operator.itemgetter(0)), [])
 
                 response['suggestions'].update({k: lst})
 

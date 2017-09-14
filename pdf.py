@@ -24,8 +24,8 @@ def concatenator(offset, m):
 
 class Plugin(AbstractPlugin):
 
-    def __init__(self, *args):
-        super().__init__(*args)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.qs = [
             ('city', 'Nom de la commune', 'string'),

@@ -2,6 +2,7 @@ from . import AbstractPlugin
 from django.http import JsonResponse
 
 import operator
+import re
 
 
 def concatenator(offset, m):
@@ -125,7 +126,10 @@ class Plugin(AbstractPlugin):
             if prop.startswith('-'):
                 prop = prop[1:]
                 sort = 'desc'
-            data['sort'] = {'properties.{0}'.format(prop): sort}
+            prop = re.sub(
+                '(properties\.)?(\w+)(\.keyword)?',
+                'properties.\g<2>.keyword', prop)
+            data['sort'] = {prop: sort}
 
         if opts['group_by']:
             data['aggregations'] = {}

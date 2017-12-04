@@ -217,7 +217,7 @@ class Plugin(AbstractPlugin):
             if 'properties' in hit['_source'] and hit['_source']['properties']:
                 entry['properties'] = hit['_source']['properties']
 
-                entry['properties']['extras'] = {
+                entry['extras'] = {
                     'type_document_seance': get_type_document_seance(
                         hit['_source']['properties'].get('type_document'),
                         hit['_source']['properties'].get('type_seance'))}

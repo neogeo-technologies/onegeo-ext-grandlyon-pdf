@@ -21,7 +21,8 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 | from         | integer | Index de pagination                  |
 | group_by     | string  | Champ d'aggrégation                  |
 | resource     | string  | Nom de la ressource                  |
-| session      | string  | Type de la séance                    |
+| session_id   | string  | Numéro de la séance                  |
+| session_type | string  | Type de la séance                    |
 | size         | integer | Nombre de résultats à retourner      |
 | sort_by      | string  | Champ de tri                         |
 | source       | string  | Nom de la source de données          |
@@ -91,7 +92,10 @@ attributs de métadonnées.
     "properties": {
         "date_seance": ...,
         "communes": ...,
-        "titre": ...,
+        "type_seance": ...,
+        "type_document": ...,
+        "numero_seance": ...,
+        "titre": ...
     },
     "extras": {
         "get_type_document_seance": ...

@@ -20,12 +20,10 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 | date_lte     | date    | Plus ancien que la date indiquée     |
 | from         | integer | Index de pagination                  |
 | group_by     | string  | Champ d'aggrégation                  |
-| resource     | string  | Nom de la ressource                  |
 | session_id   | string  | Numéro de la séance                  |
 | session_type | string  | Type de la séance                    |
 | size         | integer | Nombre de résultats à retourner      |
 | sort_by      | string  | Champ de tri                         |
-| source       | string  | Nom de la source de données          |
 | suggest      | boolean | Activer la suggestion (expérimental) |
 | suggest_mode | string  | Mode de suggestion (expérimental)    |
 | text         | string  | Texte à rechercher dans le document  |

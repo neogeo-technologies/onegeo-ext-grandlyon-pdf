@@ -7,11 +7,9 @@
 | date_lte     | Concaténation des paramètres __anneeF__ + __moisF__   |
 | from         | Remplace le paramètre __debut__                       |
 | group_by     |                                                       |
-| session      | Remplacer le paramètre __selCollection__              |
+| session_type | Remplacer le paramètre __selCollection__              |
 | size         |                                                       |
 | sort_by (1)  | Concaténation des paramètres __ordtri__ et __sujtri__ |
-| suggest      | Pas d'équivalent                                      |
-| suggest_mode | Pas d'équivalent                                      |
 | text         | Remplace le paramètre __motscles__                    |
 | title        | Remplace le paramètre __titre__                       |
 

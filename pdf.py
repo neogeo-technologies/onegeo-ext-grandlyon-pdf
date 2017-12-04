@@ -25,8 +25,8 @@ def concatenator(offset, m):
 
 class Plugin(AbstractPlugin):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, config, contexts, **kwargs):
+        super().__init__(config, contexts, **kwargs)
 
         self.qs = [
             ('city', 'Nom de la commune', 'string'),
@@ -44,6 +44,13 @@ class Plugin(AbstractPlugin):
             ('title', 'Texte à rechercher dans le titre', 'string')]
 
         self.opts = dict((e[0], None) for e in self.qs)
+
+    def prop_is_text(self, name):
+        for index, columns in self.columns_by_index.items():
+            for column in columns:
+                if column[0] == name and column[1] == 'text':
+                    return True
+        return False
 
     @property
     def query_dsl(self):
@@ -124,7 +131,8 @@ class Plugin(AbstractPlugin):
                 sort = 'desc'
             prop = re.sub(
                 '(properties\.)?(\w+)(\.keyword)?',
-                'properties.\g<2>.keyword', prop)
+                'properties.\g<2>{0}'.format(
+                    self.prop_is_text(prop) and '.keyword' or ''), prop)
             data['sort'] = {prop: sort}
 
         if opts['group_by']:

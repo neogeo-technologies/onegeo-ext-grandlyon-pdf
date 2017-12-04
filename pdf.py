@@ -103,18 +103,14 @@ class Plugin(AbstractPlugin):
         if opts['city']:
             filter.append({'term': {'properties.communes': opts['city']}})
 
-        filter_range = {}
+        filter_range = {'range': {'properties.date_seance': {}}}
         if opts['date_gte']:
-            filter_range.update({
-                'range': {
-                    'properties.date_seance': {
-                        'gte': opts['date_gte']}}})
+            filter_range['range']['properties.date_seance'].update(
+                {'gte': opts['date_gte']})
         if opts['date_lte']:
-            filter_range.update({
-                'range': {
-                    'properties.date_seance': {
-                        'lte': opts['date_lte']}}})
-        if filter_range:
+            filter_range['range']['properties.date_seance'].update(
+                {'lte': opts['date_lte']})
+        if opts['date_lte'] or opts['date_gte']:
             filter.append(filter_range)
 
         if len(filter) > 0:

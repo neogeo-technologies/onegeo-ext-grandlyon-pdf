@@ -46,6 +46,7 @@ class Plugin(AbstractPlugin):
             ('size', 'Nombre max de résultats à retourner', 'integer'),
             ('sort_by', 'Trier les résultats', 'string'),
             ('source', 'Nom de la source de données', 'string'),
+            ('session_id', 'Numéro de séance', 'string'),
             ('session_type', 'Type de séance', 'string'),
             ('suggest', 'Activer la suggestion', 'boolean'),
             ('suggest_mode', 'Mode de suggestion', 'string'),
@@ -132,6 +133,9 @@ class Plugin(AbstractPlugin):
 
         if opts['session_type']:
             filter.append({'term': {'properties.type_seance': opts['session_type']}})
+
+        if opts['session_id']:
+            filter.append({'term': {'properties.numero_seance': opts['session_id']}})
 
         filter_range = {'range': {'properties.date_seance': {}}}
         if opts['date_gte']:

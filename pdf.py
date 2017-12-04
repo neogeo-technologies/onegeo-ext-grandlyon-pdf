@@ -1,8 +1,16 @@
 from . import AbstractPlugin
+
+from django.conf import settings
 from django.http import JsonResponse
 
 import operator
 import re
+
+
+try:
+    PDF_BASE_DIR = 'file://{0}'.format(settings.PDF_DATA_BASE_DIR)
+except AttributeError:
+    PDF_BASE_DIR = 'file://'
 
 
 def concatenator(offset, m):
@@ -44,6 +52,12 @@ class Plugin(AbstractPlugin):
             ('title', 'Texte à rechercher dans le titre', 'string')]
 
         self.opts = dict((e[0], None) for e in self.qs)
+
+    def get_source_directory(self, name):
+        for context in self.contexts:
+            if context.resource.source.name == name:
+                uri = context.resource.source.uri
+                return uri.startswith(PDF_BASE_DIR) and uri[len(PDF_BASE_DIR):] or uri
 
     def prop_is_text(self, name):
         for index, columns in self.columns_by_index.items():
@@ -166,9 +180,11 @@ class Plugin(AbstractPlugin):
     def output(self, data, **params):
         results = []
         for hit in data['hits']['hits']:
-            entry = {'file': hit['_source']['origin']['filename'],
-                     'resource': hit['_source']['origin']['resource']['name'],
-                     'source': hit['_source']['origin']['source']['name']}
+            entry = {
+                'file': hit['_source']['origin']['filename'],
+                'resource': hit['_source']['origin']['resource']['name'],
+                'source': self.get_source_directory(
+                    hit['_source']['origin']['source']['name'])}
 
             if 'properties' in hit['_source'] and hit['_source']['properties']:
                 entry['properties'] = hit['_source']['properties']

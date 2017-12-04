@@ -53,6 +53,11 @@ class Plugin(AbstractPlugin):
 
         self.opts = dict((e[0], None) for e in self.qs)
 
+    def filepath(self, path):
+        for context in self.contexts:
+            if path.startswith(context.resource.name):
+               return path[len(context.resource.name) + 1:]
+
     def get_source_directory(self, name):
         for context in self.contexts:
             if context.resource.source.name == name:
@@ -181,7 +186,7 @@ class Plugin(AbstractPlugin):
         results = []
         for hit in data['hits']['hits']:
             entry = {
-                'file': hit['_source']['origin']['filename'],
+                'file': self.filepath(hit['_source']['origin']['filename']),
                 'resource': hit['_source']['origin']['resource']['name'],
                 'source': self.get_source_directory(
                     hit['_source']['origin']['source']['name'])}

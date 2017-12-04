@@ -46,6 +46,7 @@ class Plugin(AbstractPlugin):
             ('size', 'Nombre max de résultats à retourner', 'integer'),
             ('sort_by', 'Trier les résultats', 'string'),
             ('source', 'Nom de la source de données', 'string'),
+            ('session', 'Type de séance', 'string'),
             ('suggest', 'Activer la suggestion', 'boolean'),
             ('suggest_mode', 'Mode de suggestion', 'string'),
             ('text', 'Texte à rechercher dans le document', 'string'),
@@ -56,7 +57,7 @@ class Plugin(AbstractPlugin):
     def filepath(self, path):
         for context in self.contexts:
             if path.startswith(context.resource.name):
-               return path[len(context.resource.name) + 1:]
+                return path[len(context.resource.name) + 1:]
 
     def get_source_directory(self, name):
         for context in self.contexts:
@@ -128,6 +129,9 @@ class Plugin(AbstractPlugin):
 
         if opts['city']:
             filter.append({'term': {'properties.communes': opts['city']}})
+
+        if opts['session']:
+            filter.append({'term': {'properties.type_seance': opts['session']}})
 
         filter_range = {'range': {'properties.date_seance': {}}}
         if opts['date_gte']:

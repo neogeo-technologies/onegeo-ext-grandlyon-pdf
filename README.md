@@ -13,21 +13,22 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 
 ### Paramètres de chaîne de recherche
 
-| Paramètre    | Type    | Description                                         |
-| ------------ | ------- | --------------------------------------------------- |
-| city         | string  | Nom de la commune                                   |
-| date_gte     | date    | Plus récent que la date indiquée                    |
-| date_lte     | date    | Plus ancien que la date indiquée                    |
-| from         | integer | Index de pagination                                 |
-| group_by     | string  | Champ d'aggrégation                                 |
-| resource     | string  | Nom de la ressource                                 |
-| size         | integer | Nombre de résultats à retourner                     |
-| sort_by      | string  | Champ de tri                                        |
-| source       | string  | Nom de la source de données                         |
-| suggest      | boolean | Activer la suggestion (expérimental)                |
-| suggest_mode | string  | Mode de suggestion (expérimental)                   |
-| text         | string  | Texte à rechercher dans le document                 |
-| title        | string  | Texte à rechercher dans le titre                    |
+| Paramètre    | Type    | Description                          |
+| ------------ | ------- | ------------------------------------ |
+| city         | string  | Nom de la commune                    |
+| date_gte     | date    | Plus récent que la date indiquée     |
+| date_lte     | date    | Plus ancien que la date indiquée     |
+| from         | integer | Index de pagination                  |
+| group_by     | string  | Champ d'aggrégation                  |
+| resource     | string  | Nom de la ressource                  |
+| session      | string  | Type de la séance                    |
+| size         | integer | Nombre de résultats à retourner      |
+| sort_by      | string  | Champ de tri                         |
+| source       | string  | Nom de la source de données          |
+| suggest      | boolean | Activer la suggestion (expérimental) |
+| suggest_mode | string  | Mode de suggestion (expérimental)    |
+| text         | string  | Texte à rechercher dans le document  |
+| title        | string  | Texte à rechercher dans le titre     |
 
 #### Migration depuis l'ancien service de recherche PDF du GrandLyon
 
@@ -66,15 +67,21 @@ Et chaque résultat est structuré de la manière ci-dessous :
 ``` JSON
 {
     "file": "chemin/vers/le/fichier.pdf",
-    "resource": "nom_de_la_ressource",
-    "source": "nom_de_la_source",
+    "resource": "nom_du_repertoire_de_la_ressource",
+    "source": "nom_du_repertoire_de_la_source",
     "properties": { ... }
 }
 ```
 
+Le chemin complet du fichier est le résultat de la concaténation
+des trois paramètres : __source__/__resource__/__file__.
+
 Les propriétés (__properties__) correspondent aux attributs de métadonnées des
 fichiers PDF définis dans les profils d'indexation de Onegeo pour chacune des
 ressources configurées.
+
+Les propriétés (__extras__) contiennent des attributs transformés issus des
+attributs de métadonnées.
 
 ``` JSON
 {
@@ -84,7 +91,10 @@ ressources configurées.
     "properties": {
         "date_seance": ...,
         "communes": ...,
-        "titre": ...
+        "titre": ...,
+    },
+    "extras": {
+        "get_type_document_seance": ...
     }
 }
 ```
@@ -197,6 +207,28 @@ Attention, ce paramètre est sensible à la casse.
 
 [http://localhost/onegeo/api/profiles/__{pdf}__/search?__city__=__Nom de la commune__](
     http://localhost/onegeo/api/profiles/pdf/search?commune=Nom%20de%20la%20commune)
+
+#### Par le numéro de séance
+
+Le paramètre __session_id__ permet de filtrer les résultats d'une requête par
+le type de séance. Le filtre s'applique sur les PDF pour lesquels la propriété
+`numero_seance` (de type `keyword`) est définie.
+
+Attention, ce paramètre est sensible à la casse.
+
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__session_id__=__Numéro de la séance__](
+    http://localhost/onegeo/api/profiles/pdf/search?commune=Numéro%20de%20la%20séance)
+
+#### Par le type de séance
+
+Le paramètre __session_type__ permet de filtrer les résultats d'une requête par
+le type de séance. Le filtre s'applique sur les PDF pour lesquels la propriété
+`type_seance` (de type `keyword`) est définie.
+
+Attention, ce paramètre est sensible à la casse.
+
+[http://localhost/onegeo/api/profiles/__{pdf}__/search?__session_type__=__Type de la séance__](
+    http://localhost/onegeo/api/profiles/pdf/search?commune=Type%20de%20la%20séance)
 
 #### Trier les résultats
 

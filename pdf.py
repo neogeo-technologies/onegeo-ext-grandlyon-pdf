@@ -191,6 +191,21 @@ class Plugin(AbstractPlugin):
             return self.config
 
     def output(self, data, **params):
+
+        def get_type_document_seance(document, seance):
+            if document.startswith('A') and seance.startswith('B'):
+                return 'Annexe de la décision'
+            if document.startswith('D') and seance.startswith('B'):
+                return 'Décision'
+            if document.startswith('A') and seance.startswith('C'):
+                return 'Annexe de la délibération'
+            if document.startswith('D') and seance.startswith('C'):
+                return 'Délibération'
+            if document.startswith('AR') and seance.startswith('A'):
+                return 'Arrêté'
+            if document.startswith('AN') and seance.startswith('A'):
+                return "Annexe de l'arrêté"
+
         results = []
         for hit in data['hits']['hits']:
             entry = {
@@ -201,6 +216,11 @@ class Plugin(AbstractPlugin):
 
             if 'properties' in hit['_source'] and hit['_source']['properties']:
                 entry['properties'] = hit['_source']['properties']
+
+                entry['properties']['extras'] = {
+                    'type_document_seance': get_type_document_seance(
+                        hit['_source']['properties'].get('type_document'),
+                        hit['_source']['properties'].get('type_seance'))}
 
             if 'highlight' in hit:
                 k_prop = {'text': 'attachment.content',

@@ -193,6 +193,8 @@ class Plugin(AbstractPlugin):
     def output(self, data, **params):
 
         def get_type_document_seance(document, seance):
+            if not document or not seance:
+                return None
             if document.startswith('A') and seance.startswith('B'):
                 return 'Annexe de la décision'
             if document.startswith('D') and seance.startswith('B'):

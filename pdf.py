@@ -84,23 +84,23 @@ class Plugin(AbstractPlugin):
                 'origin.source.name', 'properties.*'],
             'from': opts['from'] or 0,
             'highlight': {'fields': {}, 'require_field_match': False},
-            'query': {'bool': {}},
+            'query': {'bool': {'must': [], 'should': []}},
             'size': opts['size'] or 10,
             'suggest': {}}
 
         if opts['text']:
-            data['query']['bool'] = {
-                'must': {
-                    'match': {
-                        'attachment.content': {
-                            'fuzziness': 'auto',
-                            'minimum_should_match': '75%',
-                            'query': opts['text']}}},
-                'should': {
-                    'match_phrase': {
-                        'attachment.content': {
-                            'query': opts['text'],
-                            'slop': 6}}}}
+            data['query']['bool']['must'].append({
+                'match': {
+                    'attachment.content': {
+                        'fuzziness': 'auto',
+                        'minimum_should_match': '75%',
+                        'query': opts['text']}}})
+
+            data['query']['bool']['should'].append({
+                'match_phrase': {
+                    'attachment.content': {
+                        'query': opts['text'],
+                        'slop': 6}}})
 
             data['highlight']['fields']['attachment.content'] = {
                 'post_tags': ['</strong>'],
@@ -108,13 +108,12 @@ class Plugin(AbstractPlugin):
                 'type': 'plain'}
 
         if opts['title']:
-            data['query']['bool'].update({
-                'should': {
-                    'match': {
-                        'properties.titre': {
-                            'fuzziness': 'auto',
-                            'minimum_should_match': '75%',
-                            'query': opts['title']}}}})
+            data['query']['bool']['must'].append({
+                'match': {
+                    'properties.titre': {
+                        'fuzziness': 'auto',
+                        'minimum_should_match': '75%',
+                        'query': opts['title']}}})
 
             data['highlight']['fields']['properties.titre'] = {
                 'post_tags': ['</strong>'],
@@ -148,7 +147,7 @@ class Plugin(AbstractPlugin):
             filter.append(filter_range)
 
         if len(filter) > 0:
-            data['query']['bool']['filter'] = filter
+            data['query']['bool']['must'].append(filter)
 
         if opts['sort_by']:
             prop = opts['sort_by']

@@ -136,13 +136,23 @@ class Plugin(AbstractPlugin):
         if opts['session_id']:
             filter.append({'term': {'properties.numero_seance': opts['session_id']}})
 
-        filter_range = {'range': {'properties.date_seance': {}}}
+        filter_range = {'range': {
+            'properties.date_seance': {
+                'format': 'yyyy||yyyyMM||yyyyMMdd'}}}
+
+        rounding_down = \
+            lambda str: {4: '||/y', 6: '||/M', 8: '||/d'}.get(len(str), '')
+
         if opts['date_gte']:
-            filter_range['range']['properties.date_seance'].update(
-                {'gte': opts['date_gte']})
+            filter_range['range']['properties.date_seance'].update({
+                'gte': '{0}{1}'.format(
+                    opts['date_gte'], rounding_down(opts['date_gte']))})
+
         if opts['date_lte']:
-            filter_range['range']['properties.date_seance'].update(
-                {'lte': opts['date_lte']})
+            filter_range['range']['properties.date_seance'].update({
+                'lte': '{0}{1}'.format(
+                    opts['date_lte'], rounding_down(opts['date_lte']))})
+
         if opts['date_lte'] or opts['date_gte']:
             filter.append(filter_range)
 

@@ -136,9 +136,7 @@ class Plugin(AbstractPlugin):
         if opts['session_id']:
             filter.append({'term': {'properties.numero_seance': opts['session_id']}})
 
-        filter_range = {'range': {
-            'properties.date_seance': {
-                'format': 'yyyy||yyyyMM||yyyyMMdd'}}}
+        filter_range = {'range': {'properties.date_seance': {}}}
 
         rounding_down = \
             lambda str: {4: '||/y', 6: '||/M', 8: '||/d'}.get(len(str), '')

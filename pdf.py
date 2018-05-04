@@ -40,6 +40,7 @@ class Plugin(AbstractPlugin):
             ('city', 'Nom de la commune', 'string'),
             ('date_gte', 'Plus récent que la date indiquée', 'date'),
             ('date_lte', 'Plus ancien que la date indiquée', 'date'),
+            ('document_type', 'Type de document', 'string'),
             ('from', 'Index de pagination', 'integer'),
             ('group_by', "Champ d'aggregation", 'string'),
             ('resource', 'Nom de la resource', 'string'),
@@ -48,8 +49,8 @@ class Plugin(AbstractPlugin):
             ('source', 'Nom de la source de données', 'string'),
             ('session_id', 'Numéro de séance', 'string'),
             ('session_type', 'Type de séance', 'string'),
-            ('suggest', 'Activer la suggestion', 'boolean'),
-            ('suggest_mode', 'Mode de suggestion', 'string'),
+            # ('suggest', 'Activer la suggestion', 'boolean'),
+            # ('suggest_mode', 'Mode de suggestion', 'string'),
             ('text', 'Texte à rechercher dans le document', 'string'),
             ('title', 'Texte à rechercher dans le titre', 'string')]
 
@@ -82,11 +83,12 @@ class Plugin(AbstractPlugin):
             '_source': [
                 'origin.filename', 'origin.resource.name',
                 'origin.source.name', 'properties.*'],
-            'from': opts['from'] or 0,
+            'from': opts['from'] and opts['from'].pop() or 0,
             'highlight': {'fields': {}, 'require_field_match': False},
-            'query': {'bool': {'must': [], 'should': []}},
-            'size': opts['size'] or 10,
-            'suggest': {}}
+            'query': {'bool': {'must': [], 'must_not': [], 'should': []}},
+            'size': opts['size'] and opts['size'].pop() or 10,
+            # 'suggest': {}
+            }
 
         if opts['text']:
             data['query']['bool']['must'].append({
@@ -94,12 +96,12 @@ class Plugin(AbstractPlugin):
                     'attachment.content': {
                         'fuzziness': 'auto',
                         'minimum_should_match': '75%',
-                        'query': opts['text']}}})
+                        'query': ' '.join(opts['text'])}}})
 
             data['query']['bool']['should'].append({
                 'match_phrase': {
                     'attachment.content': {
-                        'query': opts['text'],
+                        'query': ' '.join(opts['text']),
                         'slop': 6}}})
 
             data['highlight']['fields']['attachment.content'] = {
@@ -113,52 +115,66 @@ class Plugin(AbstractPlugin):
                     'properties.titre': {
                         'fuzziness': 'auto',
                         'minimum_should_match': '75%',
-                        'query': opts['title']}}})
+                        'query': ' '.join(opts['title'])}}})
 
             data['highlight']['fields']['properties.titre'] = {
                 'post_tags': ['</strong>'],
                 'pre_tags': ['<strong>'],
                 'type': 'plain'}
 
-        filter = []
-        if opts['source']:
-            filter.append({'term': {'origin.source.name': opts['source']}})
+        def must_or_must_not(l):
+            include, exclude = [], []
+            for v in l:
+                if v.startswith('!'):
+                    exclude.append(v[1:])
+                else:
+                    include.append(v)
+            return include, exclude
 
-        if opts['resource']:
-            filter.append({'term': {'origin.resource.name': opts['resource']}})
+        must_clause_params = {
+            'city': 'properties.communes',
+            'document_type': 'properties.type_document',
+            'resource': 'origin.resource.name',
+            'session_id': 'properties.numero_seance',
+            'session_type': 'properties.type_seance',
+            'source': 'origin.source.name'}
 
-        if opts['city']:
-            filter.append({'term': {'properties.communes': opts['city']}})
+        must, must_not = [], []
+        for param, field in must_clause_params.items():
+            param = opts[param]
+            if param:
+                include, exclude = must_or_must_not(param)
+                if include:
+                    must.append({'regexp': {field: '|'.join(['{}'.format(m) for m in include])}})
+                if exclude:
+                    must_not.append({'regexp': {field: '|'.join(['{}'.format(m) for m in exclude])}})
 
-        if opts['session_type']:
-            filter.append({'term': {'properties.type_seance': opts['session_type']}})
-
-        if opts['session_id']:
-            filter.append({'term': {'properties.numero_seance': opts['session_id']}})
-
-        filter_range = {'range': {'properties.date_seance': {}}}
+        range_date = {'range': {'properties.date_seance': {}}}
 
         rounding_down = \
             lambda str: {4: '||/y', 6: '||/M', 8: '||/d'}.get(len(str), '')
 
         if opts['date_gte']:
-            filter_range['range']['properties.date_seance'].update({
-                'gte': '{0}{1}'.format(
-                    opts['date_gte'], rounding_down(opts['date_gte']))})
+            prop = opts['date_gte'].pop()
+            range_date['range']['properties.date_seance'].update({
+                'gte': '{0}{1}'.format(prop, rounding_down(prop))})
 
         if opts['date_lte']:
-            filter_range['range']['properties.date_seance'].update({
-                'lte': '{0}{1}'.format(
-                    opts['date_lte'], rounding_down(opts['date_lte']))})
+            prop = opts['date_lte'].pop()
+            range_date['range']['properties.date_seance'].update({
+                'lte': '{0}{1}'.format(prop, rounding_down(prop))})
 
         if opts['date_lte'] or opts['date_gte']:
-            filter.append(filter_range)
+            must.append(range_date)
 
-        if len(filter) > 0:
-            data['query']['bool']['must'].append(filter)
+        if len(must) > 0:
+            data['query']['bool']['must'] = must
+
+        if len(must_not) > 0:
+            data['query']['bool']['must_not'] = must_not
 
         if opts['sort_by']:
-            prop = opts['sort_by']
+            prop = opts['sort_by'].pop()
             sort = 'asc'
             if prop.startswith('-'):
                 prop = prop[1:]
@@ -170,28 +186,27 @@ class Plugin(AbstractPlugin):
             data['sort'] = {prop: sort}
 
         if opts['group_by']:
+            prop = opts['group_by'].pop()
             data['aggregations'] = {}
-            data['aggregations'][opts['group_by']] = {
-                'terms': {
-                    'field': opts['group_by']}}
+            data['aggregations'][prop] = {'term': {'field': prop}}
 
-        # term suggester
-        if opts['suggest'] and str(opts['suggest']).lower() in ('true', 't'):
-            k_prop = {'text': 'attachment.content',
-                      'title': 'properties.titre'}
-            for k, prop in k_prop.items():
-                if opts[k]:
-                    if opts['suggest_mode'] == 'term':
-                        data['suggest'].update({
-                            k: {'term': {'field': prop,
-                                         'size': 5,
-                                         'sort': 'frequency',
-                                         'suggest_mode': 'always'},
-                                'text': opts[k]}})
+        # TODO term suggester
+        # if opts['suggest'] and str(opts['suggest']).lower() in ('true', 't'):
+        #     k_prop = {'text': 'attachment.content',
+        #               'title': 'properties.titre'}
+        #     for k, prop in k_prop.items():
+        #         if opts[k]:
+        #             if opts['suggest_mode'] == 'term':
+        #                 data['suggest'].update({
+        #                     k: {'term': {'field': prop,
+        #                                  'size': 5,
+        #                                  'sort': 'frequency',
+        #                                  'suggest_mode': 'always'},
+        #                         'text': opts[k]}})
         return data
 
     def input(self, **params):
-        self.opts.update(params)
+        self.opts.update(dict((k, v.split(',')) for k, v in params.items()))
         if not self.config:
             return self.query_dsl
         else:
@@ -250,20 +265,20 @@ class Plugin(AbstractPlugin):
             #             data['aggregations'][self.opts['group_by']]['buckets']
             response['aggregations'] = data['aggregations']
 
-        if 'suggest' in data and isinstance(data['suggest'], dict):
-            response['suggestions'] = {}
-
-            for k, sub in data['suggest'].items():
-                offset = {}
-                for e in sub:
-                    offset[e['offset']] = []
-                    for opt in e['options']:
-                        offset[e['offset']].append(opt['text'])
-
-                lst = concatenator(
-                    sorted(offset.items(), key=operator.itemgetter(0)), [])
-
-                response['suggestions'].update({k: lst})
+        # if 'suggest' in data and isinstance(data['suggest'], dict):
+        #     response['suggestions'] = {}
+        #
+        #     for k, sub in data['suggest'].items():
+        #         offset = {}
+        #         for e in sub:
+        #             offset[e['offset']] = []
+        #             for opt in e['options']:
+        #                 offset[e['offset']].append(opt['text'])
+        #
+        #         lst = concatenator(
+        #             sorted(offset.items(), key=operator.itemgetter(0)), [])
+        #
+        #         response['suggestions'].update({k: lst})
 
         return JsonResponse(response)
 

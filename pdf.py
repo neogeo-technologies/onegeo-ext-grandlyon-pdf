@@ -123,13 +123,15 @@ class Plugin(AbstractPlugin):
                 'type': 'plain'}
 
         def must_or_must_not(l):
-            include, exclude = [], []
+            force, include, exclude = [], [], []
             for v in l:
-                if v.startswith('!'):
+                if v == '\exists':
+                    force.append(v)
+                elif v.startswith('!'):
                     exclude.append(v[1:])
                 else:
                     include.append(v)
-            return include, exclude
+            return force, include, exclude
 
         must_clause_params = {
             'city': 'properties.communes',
@@ -143,11 +145,15 @@ class Plugin(AbstractPlugin):
         for param, field in must_clause_params.items():
             param = opts[param]
             if param:
-                include, exclude = must_or_must_not(param)
+                force, include, exclude = must_or_must_not(param)
+                if force:
+                    must.append({'exists': {'field': field}})
                 if include:
-                    must.append({'regexp': {field: '|'.join(['{}'.format(m) for m in include])}})
+                    must.append({'regexp': {field: '|'.join(
+                        ['{}'.format(m) for m in include])}})
                 if exclude:
-                    must_not.append({'regexp': {field: '|'.join(['{}'.format(m) for m in exclude])}})
+                    must_not.append({'regexp': {field: '|'.join(
+                        ['{}'.format(m) for m in exclude])}})
 
         range_date = {'range': {'properties.date_seance': {}}}
 

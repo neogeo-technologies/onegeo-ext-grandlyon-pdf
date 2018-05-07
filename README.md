@@ -8,26 +8,27 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 
 ### URL du service
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?](
-    http://localhost/onegeo/api/profiles/pdf/search)
+[http://localhost/onegeo/api/services/__{pdf}__/search?](
+    http://localhost/onegeo/api/services/pdf/search)
 
 ### Paramètres de chaîne de recherche
 
-| Paramètre    | Type    | Description                          |
-| ------------ | ------- | ------------------------------------ |
-| city         | string  | Nom de la commune                    |
-| date_gte     | date    | Plus récent que la date indiquée     |
-| date_lte     | date    | Plus ancien que la date indiquée     |
-| from         | integer | Index de pagination                  |
-| group_by     | string  | Champ d'aggrégation                  |
-| session_id   | string  | Numéro de la séance                  |
-| session_type | string  | Type de la séance                    |
-| size         | integer | Nombre de résultats à retourner      |
-| sort_by      | string  | Champ de tri                         |
-| suggest      | boolean | Activer la suggestion (expérimental) |
-| suggest_mode | string  | Mode de suggestion (expérimental)    |
-| text         | string  | Texte à rechercher dans le document  |
-| title        | string  | Texte à rechercher dans le titre     |
+| Paramètre     | Type    | Description                          |
+| ------------- | ------- | ------------------------------------ |
+| city          | string  | Nom de la commune                    |
+| date_gte      | date    | Plus récent que la date indiquée     |
+| date_lte      | date    | Plus ancien que la date indiquée     |
+| document_type | string  | Type de la document                  |
+| from          | integer | Index de pagination                  |
+| group_by      | string  | Champ d'aggrégation                  |
+| session_id    | string  | Numéro de la séance                  |
+| session_type  | string  | Type de la séance                    |
+| size          | integer | Nombre de résultats à retourner      |
+| sort_by       | string  | Champ de tri                         |
+| suggest       | boolean | Activer la suggestion (expérimental) |
+| suggest_mode  | string  | Mode de suggestion (expérimental)    |
+| text          | string  | Texte à rechercher dans le document  |
+| title         | string  | Texte à rechercher dans le titre     |
 
 #### Migration depuis l'ancien service de recherche PDF du GrandLyon
 
@@ -109,12 +110,12 @@ Par défaut, le service retourne les dix premiers résultats.
 Les paramètres __from__ et __size__ permettent de paginer les résultats
 de la manière suivante :
 
-* [http://localhost/onegeo/api/profiles/__{pdf}__/search?__from__=__0__&__size__=__10__&..](
-    http://localhost/onegeo/api/profiles/pdf/search?from=0&size=10) (valeurs par défaut)
-* [http://localhost/onegeo/api/profiles/__{pdf}__/search?__from__=__10__&__size__=__10__&..](
-    http://localhost/onegeo/api/profiles/pdf/search?from=10&size=10)
-* [http://localhost/onegeo/api/profiles/__{pdf}__/search?__from__=__20__&__size__=__10__&..](
-    http://localhost/onegeo/api/profiles/pdf/search?from=20&size=10)
+* [http://localhost/onegeo/api/services/__{pdf}__/search?__from__=__0__&__size__=__10__&..](
+    http://localhost/onegeo/api/services/pdf/search?from=0&size=10) (valeurs par défaut)
+* [http://localhost/onegeo/api/services/__{pdf}__/search?__from__=__10__&__size__=__10__&..](
+    http://localhost/onegeo/api/services/pdf/search?from=10&size=10)
+* [http://localhost/onegeo/api/services/__{pdf}__/search?__from__=__20__&__size__=__10__&..](
+    http://localhost/onegeo/api/services/pdf/search?from=20&size=10)
 * etc.
 
 ### Rechercher dans les contenus textuels des documents
@@ -122,8 +123,8 @@ de la manière suivante :
 Le paramètre __text__ permet d'effectuer une recherche textuelle dans le
 contenu des documents PDF.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__text__=__Texte à rechercher__](
-    http://localhost/onegeo/api/profiles/pdf/search?text=Texte%20à%20rechercher)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__text__=__Texte à rechercher__](
+    http://localhost/onegeo/api/services/pdf/search?text=Texte%20à%20rechercher)
 
 ### Rechercher dans les titres des documents
 
@@ -131,8 +132,8 @@ Le paramètre __title__ permet d'effectuer une recherche textuelle dans le
 titre des documents PDF. Cette recherche s'applique sur les PDF pour lesquels
 la propriété `titre` est définie.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__title__=__Texte à rechercher__](
-    http://localhost/onegeo/api/profiles/pdf/search?title=Texte%20à%20rechercher)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__title__=__Texte à rechercher__](
+    http://localhost/onegeo/api/services/pdf/search?title=Texte%20à%20rechercher)
 
 ### Filtrer les résultats
 
@@ -146,18 +147,18 @@ Quelques exemples :
 
 * Retourner tous les documents postérieurs à juin 2015 :
 
-  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=__201506__](
-    http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506)
+  [http://localhost/onegeo/api/services/__{pdf}__/search?__date_gte__=__201506__](
+    http://localhost/onegeo/api/services/pdf/search?date_gte=201506)
 
 * Retourner tous les documents antérieurs à juin 2016 :
 
-  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=__201506__&__date_lte__=__201606__](
-    http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506&date_lte=201606)
+  [http://localhost/onegeo/api/services/__{pdf}__/search?__date_gte__=__201506__&__date_lte__=__201606__](
+    http://localhost/onegeo/api/services/pdf/search?date_gte=201506&date_lte=201606)
 
 * Retourner tous les documents entre juin 2015 et juin 2016 :
 
-  [http://localhost/onegeo/api/profiles/__{pdf}__/search?__date_gte__=__201506__&__date_lte__=__201606__](
-    http://localhost/onegeo/api/profiles/pdf/search?date_gte=201506&date_lte=201606)
+  [http://localhost/onegeo/api/services/__{pdf}__/search?__date_gte__=__201506__&__date_lte__=__201606__](
+    http://localhost/onegeo/api/services/pdf/search?date_gte=201506&date_lte=201606)
 
 #### Par la source
 
@@ -173,8 +174,8 @@ Attention, ce paramètre est sensible à la casse.
 └── source_1/
 ```
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__source__=__source_0__](
-    http://localhost/onegeo/api/profiles/pdf/search?source=nom_de_la_source)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__source__=__source_0__](
+    http://localhost/onegeo/api/services/pdf/search?source=nom_de_la_source)
 
 #### Par la ressource
 
@@ -196,8 +197,8 @@ Attention, ce paramètre est sensible à la casse.
     └── resource_4/
 ```
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__resource__=__resource_3__](
-    http://localhost/onegeo/api/profiles/pdf/search?resource=nom_de_la_ressource)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__resource__=__resource_3__](
+    http://localhost/onegeo/api/services/pdf/search?resource=nom_de_la_ressource)
 
 #### Par la commune
 
@@ -207,8 +208,8 @@ la commune. Le filtre s'applique sur les PDF pour lesquels la propriété
 
 Attention, ce paramètre est sensible à la casse.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__city__=__Nom de la commune__](
-    http://localhost/onegeo/api/profiles/pdf/search?commune=Nom%20de%20la%20commune)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__city__=__Nom de la commune__](
+    http://localhost/onegeo/api/services/pdf/search?city=Nom%20de%20la%20commune)
 
 #### Par le numéro de séance
 
@@ -218,8 +219,8 @@ le type de séance. Le filtre s'applique sur les PDF pour lesquels la propriét�
 
 Attention, ce paramètre est sensible à la casse.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__session_id__=__Numéro de la séance__](
-    http://localhost/onegeo/api/profiles/pdf/search?commune=Numéro%20de%20la%20séance)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__session_id__=__Numéro de la séance__](
+    http://localhost/onegeo/api/services/pdf/search?session_id=Numéro%20de%20la%20séance)
 
 #### Par le type de séance
 
@@ -229,15 +230,50 @@ le type de séance. Le filtre s'applique sur les PDF pour lesquels la propriét�
 
 Attention, ce paramètre est sensible à la casse.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__session_type__=__Type de la séance__](
-    http://localhost/onegeo/api/profiles/pdf/search?commune=Type%20de%20la%20séance)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=__Type de la séance__](
+    http://localhost/onegeo/api/services/pdf/search?session_type=Type%20de%20la%20séance)
+
+
+#### Par le type de document
+
+Le paramètre __document_type__ permet de filtrer les résultats d'une requête par
+le type de document. Le filtre s'applique sur les PDF pour lesquels la propriété
+`type_document` (de type `keyword`) est définie.
+
+Attention, ce paramètre est sensible à la casse.
+
+[http://localhost/onegeo/api/services/__{pdf}__/search?__document_type__=__Type de document__](
+    http://localhost/onegeo/api/services/pdf/search?document_type=Type%20de%20document)
+
+
+#### Opérateur d'exclusion
+
+L'opérateur d'exclusion (« différent de ») symbolisé par le caractère `!` ajouté en préfixe à une valeur permet de retourner tous les documents dont la valeur du paramètre est différent de la valeur indiquée.
+
+[http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=!Conseil](
+    http://localhost/onegeo/api/services/pdf/search?session_type=!Conseil)
+
+
+#### Filtrer sur paramètre existant
+
+Le mot-clé `\exists` en valeur d'un paramètre permet de retourner tous les documents pour lesquels le champ indiqué existe comme propriété de la ressource.
+
+[http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=!Conseil](
+    http://localhost/onegeo/api/services/pdf/search?session_type=!Conseil)
+
+
+#### Filtre multiple (opérateur AND)
+
+[http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=!Conseil&__session_type__=\exists](
+    http://localhost/onegeo/api/services/pdf/search?session_type=!Conseil&session_type=\exists)
+
 
 #### Trier les résultats
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__sort_by__=__date_seance__](
-    http://localhost/onegeo/api/profiles/pdf/search?sort_by=date_seance)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__sort_by__=__date_seance__](
+    http://localhost/onegeo/api/services/pdf/search?sort_by=date_seance)
 
 Pour obtenir l'ordre décroissant, préfixez la valeur de champ par le signe _[_ __-__ _]_.
 
-[http://localhost/onegeo/api/profiles/__{pdf}__/search?__sort_by__=__-date_seance__](
-    http://localhost/onegeo/api/profiles/pdf/search?sort_by=-date_seance)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__sort_by__=__-date_seance__](
+    http://localhost/onegeo/api/services/pdf/search?sort_by=-date_seance)

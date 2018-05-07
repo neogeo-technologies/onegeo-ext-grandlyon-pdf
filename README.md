@@ -18,7 +18,7 @@ Service de recherche des documents PDF RAAD et Lyvia du Grand Lyon.
 | city          | string  | Nom de la commune                    |
 | date_gte      | date    | Plus récent que la date indiquée     |
 | date_lte      | date    | Plus ancien que la date indiquée     |
-| document_type | string  | Type de la document                  |
+| document_type | string  | Type de document                     |
 | from          | integer | Index de pagination                  |
 | group_by      | string  | Champ d'aggrégation                  |
 | session_id    | string  | Numéro de la séance                  |
@@ -256,13 +256,13 @@ L'opérateur d'exclusion (« différent de ») symbolisé par le caractère `!` 
 
 #### Filtrer sur paramètre existant
 
-Le mot-clé `\exists` en valeur d'un paramètre permet de retourner tous les documents pour lesquels le champ indiqué existe comme propriété de la ressource.
+Le mot-clé `\exists` en valeur d'un paramètre permet de retourner tous les documents pour lesquels le champ indiqué existe comme propriétés de ceux-ci.
 
-[http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=!Conseil](
-    http://localhost/onegeo/api/services/pdf/search?session_type=!Conseil)
+[http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=\exists](
+    http://localhost/onegeo/api/services/pdf/search?session_type=\exists)
 
 
-#### Filtre multiple (opérateur AND)
+#### Filtre multiple sur un même paramètre (opérateur `AND` uniquement)
 
 [http://localhost/onegeo/api/services/__{pdf}__/search?__session_type__=!Conseil&__session_type__=\exists](
     http://localhost/onegeo/api/services/pdf/search?session_type=!Conseil&session_type=\exists)
@@ -273,7 +273,7 @@ Le mot-clé `\exists` en valeur d'un paramètre permet de retourner tous les doc
 [http://localhost/onegeo/api/services/__{pdf}__/search?__sort_by__=__date_seance__](
     http://localhost/onegeo/api/services/pdf/search?sort_by=date_seance)
 
-Pour obtenir l'ordre décroissant, préfixez la valeur de champ par le signe _[_ __-__ _]_.
+Pour obtenir l'ordre décroissant, préfixez la valeur de champ par le signe `-`.
 
 [http://localhost/onegeo/api/services/__{pdf}__/search?__sort_by__=__-date_seance__](
     http://localhost/onegeo/api/services/pdf/search?sort_by=-date_seance)

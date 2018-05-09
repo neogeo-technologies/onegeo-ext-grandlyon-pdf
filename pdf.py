@@ -90,15 +90,17 @@ class Plugin(AbstractPlugin):
             # 'suggest': {}
             }
 
+        must, must_not, should = [], [], []
+
         if opts['text']:
-            data['query']['bool']['must'].append({
+            must.append({
                 'match': {
                     'attachment.content': {
                         'fuzziness': 'auto',
                         'minimum_should_match': '75%',
                         'query': ' '.join(opts['text'])}}})
 
-            data['query']['bool']['should'].append({
+            should.append({
                 'match_phrase': {
                     'attachment.content': {
                         'query': ' '.join(opts['text']),
@@ -110,7 +112,7 @@ class Plugin(AbstractPlugin):
                 'type': 'plain'}
 
         if opts['title']:
-            data['query']['bool']['must'].append({
+            must.append({
                 'match': {
                     'properties.titre': {
                         'fuzziness': 'auto',
@@ -141,7 +143,6 @@ class Plugin(AbstractPlugin):
             'session_type': 'properties.type_seance',
             'source': 'origin.source.name'}
 
-        must, must_not = [], []
         for param, field in must_clause_params.items():
             param = opts[param]
             if param:
@@ -170,14 +171,16 @@ class Plugin(AbstractPlugin):
             range_date['range']['properties.date_seance'].update({
                 'lte': '{0}{1}'.format(prop, rounding_down(prop))})
 
-        if opts['date_lte'] or opts['date_gte']:
-            must.append(range_date)
+        must.append(range_date)
 
         if len(must) > 0:
             data['query']['bool']['must'] = must
 
         if len(must_not) > 0:
             data['query']['bool']['must_not'] = must_not
+
+        if len(should) > 0:
+            data['query']['bool']['should'] = should
 
         if opts['sort_by']:
             prop = opts['sort_by'].pop()

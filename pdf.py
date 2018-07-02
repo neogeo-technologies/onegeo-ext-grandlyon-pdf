@@ -144,9 +144,21 @@ class Plugin(AbstractPlugin):
             'source': 'origin.source.name'}
 
         for param, field in must_clause_params.items():
-            param = opts[param]
-            if param:
-                force, include, exclude = must_or_must_not(param)
+            value = opts[param]
+            if param == 'session_type' and '\\all' in value:
+                should.append({
+                    'bool': {
+                        'must': [
+                            {'exists': {'field': 'properties.type_seance'}}],
+                        'must_not': [
+                            {'regexp': {'properties.type_document': 'RAPPORT|PJ'}}]
+                        }
+                    })
+                should.append({'match': {'properties.type_document': 'ARRETE'}})
+                # opts.pop('document_type')
+                # opts.pop('session_type')
+            elif value:
+                force, include, exclude = must_or_must_not(value)
                 if force:
                     must.append({'exists': {'field': field}})
                 if include:

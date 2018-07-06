@@ -145,7 +145,7 @@ class Plugin(AbstractPlugin):
 
         for param, field in must_clause_params.items():
             value = opts[param]
-            if param == 'session_type' and '\\all' in value:
+            if value and param == 'session_type' and '\\all' in value:
                 should.append({
                     'bool': {
                         'must': [

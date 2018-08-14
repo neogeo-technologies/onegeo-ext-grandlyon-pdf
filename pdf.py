@@ -1,9 +1,22 @@
-from . import AbstractPlugin
+# Copyright (c) 2017-2018 Neogeo-Technologies.
+# All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+
 
 from django.conf import settings
 from django.http import JsonResponse
-
-import operator
+from onegeo_api.extensions import AbstractPlugin
 import re
 
 
@@ -33,9 +46,8 @@ def concatenator(offset, m):
 
 class Plugin(AbstractPlugin):
 
-    def __init__(self, config, contexts, **kwargs):
-        super().__init__(config, contexts, **kwargs)
-
+    def __init__(self, _, index_profiles, **kwargs):
+        super().__init__(None, index_profiles, **kwargs)
         self.qs = [
             ('city', 'Nom de la commune', 'string'),
             ('date_gte', 'Plus récent que la date indiquée', 'date'),
@@ -57,15 +69,16 @@ class Plugin(AbstractPlugin):
         self.opts = dict((e[0], None) for e in self.qs)
 
     def filepath(self, path):
-        for context in self.contexts:
-            if path.startswith(context.resource.name):
-                return path[len(context.resource.name) + 1:]
+        for context in self.index_profiles:
+            if path.startswith(context.resource.typename):
+                return path[len(context.resource.typename) + 1:]
+            return path
 
-    def get_source_directory(self, name):
-        for context in self.contexts:
-            if context.resource.source.name == name:
-                uri = context.resource.source.uri
-                return uri.startswith(PDF_BASE_DIR) and uri[len(PDF_BASE_DIR):] or uri
+    # def get_source_directory(self, name):
+    #     for context in self.index_profiles:
+    #         if context.resource.source.name == name:
+    #             uri = context.resource.source.uri
+    #             return uri.startswith(PDF_BASE_DIR) and uri[len(PDF_BASE_DIR):] or uri
 
     def prop_is_text(self, name):
         for index, columns in self.columns_by_index.items():
@@ -74,15 +87,16 @@ class Plugin(AbstractPlugin):
                     return True
         return False
 
-    @property
-    def query_dsl(self):
-
+    def input(self, **params):
+        self.opts.update(dict((k, v.split(',')) for k, v in params.items()))
         opts = self.opts
 
         data = {
             '_source': [
-                'origin.filename', 'origin.resource.name',
-                'origin.source.name', 'properties.*'],
+                'lineage.filename',
+                'lineage.resource',
+                'lineage.source',
+                'properties.*'],
             'from': opts['from'] and opts['from'].pop() or 0,
             'highlight': {'fields': {}, 'require_field_match': False},
             'query': {'bool': {'must': [], 'must_not': [], 'should': []}},
@@ -138,10 +152,11 @@ class Plugin(AbstractPlugin):
         must_clause_params = {
             'city': 'properties.communes',
             'document_type': 'properties.type_document',
-            'resource': 'origin.resource.name',
+            'resource': 'lineage.resource.name',
             'session_id': 'properties.numero_seance',
             'session_type': 'properties.type_seance',
-            'source': 'origin.source.name'}
+            # 'source': 'lineage.source.name'  # TODO
+            }
 
         for param, field in must_clause_params.items():
             value = opts[param]
@@ -183,7 +198,7 @@ class Plugin(AbstractPlugin):
             range_date['range']['properties.date_seance'].update({
                 'lte': '{0}{1}'.format(prop, rounding_down(prop))})
 
-        must.append(range_date)
+        # must.append(range_date)
 
         if len(must) > 0:
             data['query']['bool']['must'] = must
@@ -226,13 +241,6 @@ class Plugin(AbstractPlugin):
         #                         'text': opts[k]}})
         return data
 
-    def input(self, **params):
-        self.opts.update(dict((k, v.split(',')) for k, v in params.items()))
-        if not self.config:
-            return self.query_dsl
-        else:
-            return self.config
-
     def output(self, data, **params):
 
         def get_type_document_seance(document, seance):
@@ -254,10 +262,11 @@ class Plugin(AbstractPlugin):
         results = []
         for hit in data['hits']['hits']:
             entry = {
-                'file': self.filepath(hit['_source']['origin']['filename']),
-                'resource': hit['_source']['origin']['resource']['name'],
-                'source': self.get_source_directory(
-                    hit['_source']['origin']['source']['name'])}
+                'file': self.filepath(hit['_source']['lineage']['filename']),
+                'resource': hit['_source']['lineage']['resource']['name'],
+                # 'source': self.get_source_directory(
+                #     hit['_source']['lineage']['source']['uri'])
+                'source': hit['_source']['lineage']['source']['uri']}
 
             if 'properties' in hit['_source'] and hit['_source']['properties']:
                 entry['properties'] = hit['_source']['properties']

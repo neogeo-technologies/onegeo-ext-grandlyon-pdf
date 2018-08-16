@@ -266,7 +266,7 @@ class Plugin(AbstractPlugin):
                 'resource': hit['_source']['lineage']['resource']['name'],
                 # 'source': self.get_source_directory(
                 #     hit['_source']['lineage']['source']['uri'])
-                'source': hit['_source']['lineage']['source']['uri']}
+                'source': hit['_source']['lineage']['source']['uri'].split('/')[-1]}
 
             if 'properties' in hit['_source'] and hit['_source']['properties']:
                 entry['properties'] = hit['_source']['properties']

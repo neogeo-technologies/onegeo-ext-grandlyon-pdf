@@ -198,7 +198,7 @@ class Plugin(AbstractPlugin):
             range_date['range']['properties.date_seance'].update({
                 'lte': '{0}{1}'.format(prop, rounding_down(prop))})
 
-        # must.append(range_date)
+        must.append(range_date)
 
         if len(must) > 0:
             data['query']['bool']['must'] = must

@@ -198,7 +198,7 @@ class Plugin(AbstractPlugin):
             range_date['range']['properties.date_seance'].update({
                 'lte': '{0}{1}'.format(prop, rounding_down(prop))})
 
-        if opts['date_gte'] or opts['date_lte']:
+        if range_date['range']['properties.date_seance']:
             must.append(range_date)
 
         if len(must) > 0:

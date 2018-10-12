@@ -161,15 +161,22 @@ class Plugin(AbstractPlugin):
         for param, field in must_clause_params.items():
             value = opts[param]
             if value and param == 'session_type' and '\\all_public' in value:
-                should.append({
+                must.append({
                     'bool': {
-                        'must': [
-                            {'exists': {'field': 'properties.type_seance'}}],
-                        'must_not': [
-                            {'regexp': {'properties.type_document': 'RAPPORT|PJ'}}]
-                        }
-                    })
-                should.append({'match': {'properties.type_document': 'ARRETE'}})
+                        'should': [{
+                            'bool': {
+                                'must_not': [{
+                                    'term': {
+                                        'properties.type_document': 'RAPPORT'}}, {
+                                    'term': {
+                                        'properties.type_document': 'PJ'}}, {
+                                    'term': {
+                                        'properties.type_document': 'ANNEXE'}}],
+                                'must': [{
+                                    'exists': {
+                                        'field': 'properties.type_seance'}}]}}, {
+                            'match': {
+                                'properties.type_document': 'ARRETE'}}]}})
                 # opts.pop('document_type')
                 # opts.pop('session_type')
             elif value:

@@ -218,16 +218,19 @@ class Plugin(AbstractPlugin):
             data['query']['bool']['should'] = should
 
         if opts['sort_by']:
-            prop = opts['sort_by'].pop()
-            sort = 'asc'
-            if prop.startswith('-'):
-                prop = prop[1:]
-                sort = 'desc'
-            prop = re.sub(
-                '(properties\.)?(\w+)(\.keyword)?',
-                'properties.\g<2>{0}'.format(
-                    self.prop_is_text(prop) and '.keyword' or ''), prop)
-            data['sort'] = {prop: sort}
+            sort = []
+            for prop in opts['sort_by']:
+                prop = prop.strip()
+                order = 'asc'
+                if prop.startswith('-'):
+                    prop = prop[1:]
+                    order = 'desc'
+                prop = re.sub(
+                    '(properties\.)?(\w+)(\.keyword)?',
+                    'properties.\g<2>{0}'.format(
+                        self.prop_is_text(prop) and '.keyword' or ''), prop)
+                sort.append({prop: order})
+            data['sort'] = sort
 
         if opts['group_by']:
             prop = opts['group_by'].pop()

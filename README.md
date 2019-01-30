@@ -277,3 +277,8 @@ Pour obtenir l'ordre décroissant, préfixez la valeur de champ par le signe `-`
 
 [http://localhost/onegeo/api/services/__{pdf}__/search?__sort_by__=__-date_seance__](
     http://localhost/onegeo/api/services/pdf/search?sort_by=-date_seance)
+
+Le tri sur plusieurs paramètres est également possible.
+
+[http://localhost/onegeo/api/services/__{pdf}__/search?__sort_by__=__date_seance__,__numero_seance__](
+    http://localhost/onegeo/api/services/pdf/search?sort_by=date_seance,numero_seance)

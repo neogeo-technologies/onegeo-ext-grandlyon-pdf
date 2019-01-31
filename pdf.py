@@ -166,12 +166,12 @@ class Plugin(AbstractPlugin):
                         'should': [{
                             'bool': {
                                 'must_not': [{
-                                    'term': {
-                                        'properties.type_document': 'RAPPORT'}}, {
+                                    # 'term': {
+                                    #     'properties.type_document': 'ANNEXE'}}, {
                                     'term': {
                                         'properties.type_document': 'PJ'}}, {
                                     'term': {
-                                        'properties.type_document': 'ANNEXE'}}],
+                                        'properties.type_document': 'RAPPORT'}}],
                                 'must': [{
                                     'exists': {
                                         'field': 'properties.type_seance'}}]}}, {

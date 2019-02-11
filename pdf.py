@@ -166,19 +166,28 @@ class Plugin(AbstractPlugin):
                         'should': [{
                             'bool': {
                                 'must_not': [{
-                                    # 'term': {
-                                    #     'properties.type_document': 'ANNEXE'}}, {
                                     'term': {
-                                        'properties.type_document': 'PJ'}}, {
+                                        'properties.type_document': 'PJ'}
+                                    }, {
                                     'term': {
-                                        'properties.type_document': 'RAPPORT'}}],
+                                        'properties.type_document': 'RAPPORT'}
+                                    }],
                                 'must': [{
                                     'exists': {
-                                        'field': 'properties.type_seance'}}]}}, {
-                            'match': {
-                                'properties.type_document': 'ARRETE'}}]}})
-                # opts.pop('document_type')
-                # opts.pop('session_type')
+                                        'field': 'properties.type_seance'}
+                                    }]
+                                }
+                            }, {
+                            'terms': {
+                                'properties.type_document': [
+                                    'ARRETE',
+                                    'ANNEXE',
+                                    'ARRETE ANNEXE PDF',
+                                    ]
+                                }
+                            }]
+                        }
+                    })
             elif value:
                 force, include, exclude = must_or_must_not(value)
                 if force:
@@ -235,7 +244,7 @@ class Plugin(AbstractPlugin):
         if opts['group_by']:
             prop = opts['group_by'].pop()
             data['aggregations'] = {}
-            data['aggregations'][prop] = {'terms': {'field': prop}}
+            data['aggregations'][prop] = {'terms': {'field': prop, 'size': 100}}
 
         # TODO term suggester
         # if opts['suggest'] and str(opts['suggest']).lower() in ('true', 't'):

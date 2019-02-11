@@ -244,7 +244,7 @@ class Plugin(AbstractPlugin):
         if opts['group_by']:
             prop = opts['group_by'].pop()
             data['aggregations'] = {}
-            data['aggregations'][prop] = {'terms': {'field': prop}}
+            data['aggregations'][prop] = {'terms': {'field': prop, 'size': 100}}
 
         # TODO term suggester
         # if opts['suggest'] and str(opts['suggest']).lower() in ('true', 't'):
